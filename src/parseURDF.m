@@ -32,9 +32,20 @@ for i = 0:numJoints-1
         jointOrigin = joint.getElementsByTagName('origin');
         jointOriginXYZ = char(jointOrigin.item(0).getAttribute('xyz'));
         jointOriginXYZ = str2num(jointOriginXYZ); % Convert string to numeric array
+        jointAxis = joint.getElementsByTagName('axis');
+        
+        if jointAxis.getLength > 0
+            axisXYZ = char(jointAxis.item(0).getAttribute('xyz'));
+            axisXYZ = str2num(axisXYZ); % Convert string to numeric array
+        else
+            axisXYZ = [0, 0, 0]; % Default or error value
+        end
+        % Store joint data with axis
+        robot.Joints = [robot.Joints; struct('Name', jointName, 'Type', jointType, 'Origin', jointOriginXYZ, 'Axis', axisXYZ)];
 
-        % Store joint data in robot structure
-        robot.Joints = [robot.Joints; struct('Name', jointName, 'Type', jointType, 'Origin', jointOriginXYZ)];
+%         % Store joint data in robot structure
+%         robot.Joints = [robot.Joints; struct('Name', jointName, 'Type', jointType, 'Origin', jointOriginXYZ)];
+
 
         % Check if the joint belongs to the right leg (based on jointName or other criteria)
         if isRightLegJoint(jointName)
@@ -59,5 +70,5 @@ disp('Right leg link origins:');
 for i = 1:length(link)
     disp(['Link ', num2str(i), ': ', mat2str(link{i})]);
 end
-
+Formulate_Contact_Jacobian(robot)
 end

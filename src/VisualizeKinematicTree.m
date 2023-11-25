@@ -11,7 +11,7 @@ elseif isunix
     else
         disp('Running on Linux/Unix');
         % Define the URDF file
-        urdfFile = 'robot.urdf';
+        urdfFile = 'models/robot.urdf';
 
         % Generate the graphiz file from the URDF file
         [status, cmdout] = system(['urdf_to_graphiz ', urdfFile]);

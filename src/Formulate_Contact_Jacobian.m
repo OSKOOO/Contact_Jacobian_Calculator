@@ -1,21 +1,27 @@
 function [Contact_Jacobian, Rotm_foot] = Formulate_Contact_Jacobian(robot)
-    % Input
-    q = sym('q', [10, 1]);
-    q_R = q(1:5, 1);
-    q_L = q(6:10);
+    % Number of revolute joints
+    numRevoluteJoints = length(robot.Joints);
+
+    % Adjust the symbolic variable 'q' based on the number of revolute joints
+    q = sym('q', [numRevoluteJoints, 1]);
+    
+    % Split 'q' into right and left leg joint variables
+    % Assuming the first half of the joints belong to the right leg and the second half to the left
+    % Adjust this logic based on your robot's configuration
+    halfNumJoints = ceil(numRevoluteJoints / 2);
+    q_R = q(1:halfNumJoints, 1);
+    q_L = q(halfNumJoints+1:end, 1);
 
     R = sym('r', [9, 1]); % input R as vector
     R = [reshape(R, [3, 3]), zeros(3, 1); zeros(1, 3), 1];
 
     % Extract link positions from the robot structure (obtained from parseURDF)
-    % Assuming robot.Joints contains the right leg joint information
-    % and each joint struct has an 'Origin' field with [x, y, z] data
     link = repmat({zeros(3, 1)}, 5, 1);
     for i = 1:min(length(robot.Joints), 5)
-        link{i} = str2num(robot.Joints(i).Origin)';
+        link{i} = robot.Joints(i).Origin';
     end
 
-    foot = [0; 0; -0.04; 1];
+foot = [0; 0; -0.04; 1];
 
 % Translation matrices
 T_R=repmat({eye(4)},5,1);
@@ -24,15 +30,37 @@ for i=1:5
     T_R{i}(1:3,4)=link{i};
     T_L{i}(1:3,4)=[1;-1;1].*link{i};
 end
+% 
+% % Rotation matrices
+% %yaw
+% R_R{1} = [cos(q_R(1)), -sin(q_R(1)), 0, 0;
+%           sin(q_R(1)),  cos(q_R(1)), 0, 0;
+%           0,            0,           1, 0;
+%           0,            0,           0, 1];
+% %roll
+% R_R{2}=[1,0,0,0;0,cos(q_R(2)),-sin(q_R(2)),0;0,sin(q_R(2)),cos(q_R(2)),0;0,0,0,1];
+% 
+% R_L{1}=[cos(q_L(1)),-sin(q_L(1)),0,0;sin(q_L(1)),cos(q_L(1)),0,0;0,0,1,0;0,0,0,1];
+% R_L{2}=[1,0,0,0;0,cos(q_L(2)),-sin(q_L(2)),0;0,sin(q_L(2)),cos(q_L(2)),0;0,0,0,1];
+% for i=3:5
+%     R_R{i}=[cos(q_R(i)),0,sin(q_R(i)),0;0,1,0,0;-sin(q_R(i)),0,cos(q_R(i)),0;0,0,0,1];
+%     R_L{i}=[cos(q_L(i)),0,sin(q_L(i)),0;0,1,0,0;-sin(q_L(i)),0,cos(q_L(i)),0;0,0,0,1];
+% end
 
-% Rotation matrices
-R_R{1}=[cos(q_R(1)),-sin(q_R(1)),0,0;sin(q_R(1)),cos(q_R(1)),0,0;0,0,1,0;0,0,0,1];
-R_R{2}=[1,0,0,0;0,cos(q_R(2)),-sin(q_R(2)),0;0,sin(q_R(2)),cos(q_R(2)),0;0,0,0,1];
-R_L{1}=[cos(q_L(1)),-sin(q_L(1)),0,0;sin(q_L(1)),cos(q_L(1)),0,0;0,0,1,0;0,0,0,1];
-R_L{2}=[1,0,0,0;0,cos(q_L(2)),-sin(q_L(2)),0;0,sin(q_L(2)),cos(q_L(2)),0;0,0,0,1];
-for i=3:5
-    R_R{i}=[cos(q_R(i)),0,sin(q_R(i)),0;0,1,0,0;-sin(q_R(i)),0,cos(q_R(i)),0;0,0,0,1];
-    R_L{i}=[cos(q_L(i)),0,sin(q_L(i)),0;0,1,0,0;-sin(q_L(i)),0,cos(q_L(i)),0;0,0,0,1];
+for i = 1:min(length(robot.Joints), 5)
+    axis = robot.Joints(i).Axis;
+    if isequal(axis, [0, 0, 1]) % Yaw
+        R_R{i} = [cos(q_R(i)),-sin(q_R(i)),0,0; sin(q_R(i)),cos(q_R(i)),0,0; 0,0,1,0; 0,0,0,1];
+        R_L{i} = [cos(q_L(i)),-sin(q_L(i)),0,0; sin(q_L(i)),cos(q_L(i)),0,0; 0,0,1,0; 0,0,0,1];
+    elseif isequal(axis, [1, 0, 0]) % Roll
+        R_R{i}=[1,0,0,0;0,cos(q_R(i)),-sin(q_R(i)),0;0,sin(q_R(i)),cos(q_R(i)),0;0,0,0,1];
+        R_L{i}=[1,0,0,0;0,cos(q_L(i)),-sin(q_L(i)),0;0,sin(q_L(i)),cos(q_L(i)),0;0,0,0,1];
+    elseif isequal(axis, [0, 1, 0]) % Pitch
+        R_R{i}=[cos(q_R(i)),0,sin(q_R(i)),0;0,1,0,0;-sin(q_R(i)),0,cos(q_R(i)),0;0,0,0,1];
+        R_L{i}=[cos(q_L(i)),0,sin(q_L(i)),0;0,1,0,0;-sin(q_L(i)),0,cos(q_L(i)),0;0,0,0,1];
+    else
+        disp("ERROR: Invalid axis of rotation");
+    end
 end
 
 r_R=foot;
