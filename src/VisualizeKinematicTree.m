@@ -16,13 +16,9 @@ function VisualizeKinematicTree(urdfFile)
     % Determine the OS and open the PDF
     if ispc
         disp('Running on Windows');
-        % Define the command for Windows here
-        % Example: system(['start ', robotName, '.pdf']);
     elseif isunix
         if ismac
             disp('Running on macOS');
-            % Define the command for macOS here
-            % Example: system(['open ', robotName, '.pdf']);
         else
             disp('Running on Linux/Unix');
             % Generate the graphiz file from the URDF file

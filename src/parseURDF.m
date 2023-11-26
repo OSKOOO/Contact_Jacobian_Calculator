@@ -58,7 +58,7 @@ end
 % Function to determine if a joint is part of the right leg
 function isRight = isRightLegJoint(jointName)
     % Check if the joint name contains any of the specified prefixes
-    %Modify based on your robot naming convention
+    % Modify based on your robot naming convention
     rightLegPrefixes = {'R_', 'right_', 'Right_'};
     isRight = any(contains(rightLegPrefixes, jointName));
 end

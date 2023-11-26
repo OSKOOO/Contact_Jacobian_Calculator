@@ -1,5 +1,8 @@
 function [Contact_Jacobian, Rotm_foot] = Formulate_Contact_Jacobian(robot)
+    
+    % Distance between conact wrench and the final rev joint get foot(1:3) from user   
     global contactFrame;
+    
     % Number of revolute joints
     numRevoluteJoints = length(robot.Joints);
 
@@ -21,9 +24,6 @@ function [Contact_Jacobian, Rotm_foot] = Formulate_Contact_Jacobian(robot)
     for i = 1:min(length(robot.Joints), halfNumJoints)
         link{i} = robot.Joints(i).Origin';
     end
-
-% Distance between conact wrench and the cinal rev joint get foot(1:3) from user   
-% foot = [0; 0.001; -0.04; 1];
 
 % Translation matrices
 T_R=repmat({eye(4)},halfNumJoints,1);
@@ -82,7 +82,8 @@ end
 
 Jc=[Jr_R;Jr_L;Jo_R;Jo_L]; % right force, left force, right moment, left moment 
 contact_mapping=[blkdiag(Jc(1:3,:)',Jc(4:6,:)'),blkdiag(Jc(7:9,:)',Jc(10:12,:)')];
-Contact_Jacobian=matlabFunction(contact_mapping); % size=[12,5]
+Contact_Jacobian=matlabFunction(contact_mapping); 
+% TODO
 % Rotm_foot=matlabFunction([o_R{6};o_L{6}]); % additional output, foot orientation, size=[6,3]
 Rotm_foot=[];
 end
