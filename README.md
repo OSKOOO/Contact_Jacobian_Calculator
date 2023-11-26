@@ -40,6 +40,12 @@ It's recommended to keep URDF files in the src/models/ directory and MATLAB scri
 ## Contributing
 Contributions to this project are welcome. Please fork the repository and submit a pull request with your changes to accommodate your bipedal robot.
 
+## Debugging and future work
+  - Make sure you have a naming convention for your joints in the URDF file that follows the examples in /models. E.g., R_knee_joint or right_knee, etc. else you can modify parseURDF.m file to add your naming convention to the list
+  - We make a necessary assumption that there is a mirror symmetry between the two legs
+  - Working on a jacobian that accounts for floating body rotation
+  - Working on adding calculating jacobians between any user-given frames
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
