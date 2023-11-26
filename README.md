@@ -49,6 +49,9 @@ Contributions to this project are welcome. Please fork the repository and submit
   - Working on a jacobian that accounts for floating body rotation
   - Working on adding calculating jacobians between any user-given frames
 
+## Contact
+    Omar Kolt - kolt@usc.edu
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
