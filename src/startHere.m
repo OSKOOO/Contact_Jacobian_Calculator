@@ -18,17 +18,22 @@ function [robot, Contact_Jacobian] = startHere()
 
     % Prompt for the offset vector
     disp('Enter the offset frame as [x; y; z] in meters:');
-    contactFrame = input('Offset vector (e.g., [0; 0.001; -0.04]): ');
+    contactFrame = input('Offset vector (e.g., [0; 0.0; -0.04]): ');
 
     % Validate the input
     while length(contactFrame) ~= 3 || ~isnumeric(contactFrame)
         disp('Invalid input. Please enter a 3-element numeric vector.');
-        contactFrame = input('Offset frame (e.g., [0; 0.001; -0.04]): ');
+        contactFrame = input('Offset frame (e.g., [0; 0.0; -0.04]): ');
     end
 
     % Append the homogeneous coordinate
     contactFrame = [contactFrame; 1];
 
     % Parse the URDF file to get robot configuration
-    [robot, Contact_Jacobian, Rotm_foot] = parseURDF(URDF);
+    [ robot, Contact_Jacobian, Rotm_foot] = parseURDF(URDF);
+
+    % Save Contact_Jacobian to the MATLAB base workspace
+    assignin('base', 'Contact_Jacobian', Contact_Jacobian);  
+    disp('************************************************************************************')
+    disp('Contact jacobian analytical function is saved to the workspace and ready to be used.')
 end

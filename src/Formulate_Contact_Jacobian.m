@@ -81,8 +81,8 @@ for i = 1:halfNumJoints
 end
 
 Jc=[Jr_R;Jr_L;Jo_R;Jo_L]; % right force, left force, right moment, left moment 
-contact_mapping=[blkdiag(Jc(1:3,:)',Jc(4:6,:)'),blkdiag(Jc(7:9,:)',Jc(10:12,:)')];
-Contact_Jacobian=matlabFunction(contact_mapping); 
+% contact_mapping=[blkdiag(Jc(1:3,:)',Jc(4:6,:)'),blkdiag(Jc(7:9,:)',Jc(10:12,:)')];
+Contact_Jacobian=matlabFunction(Jc); 
 % TODO
 % Rotm_foot=matlabFunction([o_R{6};o_L{6}]); % additional output, foot orientation, size=[6,3]
 Rotm_foot=[];
