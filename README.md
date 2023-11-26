@@ -44,7 +44,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## References 
   DRCL-USC,
-  “https://github.com/DRCL-USC/Hector_Simulation.”
+  "https://github.com/DRCL-USC/Hector_Simulation"
 
 
 
