@@ -2,7 +2,7 @@
 
 This project provides a set of MATLAB scripts for visualizing the kinematic tree of a robot, testing the analytical Jacobian, and parsing URDF files to calculate various kinematic properties. The tools are designed to be flexible and adaptable to different robotic configurations.
 <div align="center">
-    <img src="https://github.com/OSKOOO/Contact_Jacobian_Calculator/blob/main/doc/jac_form.png" width="500" alt="Kinematic Tree Visualization">
+    <img src="https://github.com/OSKOOO/Contact_Jacobian_Calculator/blob/main/doc/Jc_Formulation.png" width="700" alt="Kinematic Tree Visualization">
 </div>
 
 ## Files
