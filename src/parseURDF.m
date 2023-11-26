@@ -1,74 +1,65 @@
-function robot = parseURDF
+function [robot, Contact_Jacobian, Rotm_foot] = parseURDF(urdfFile)
 
-urdfFile = 'robot.urdf';
-VisualizeKinematicTree (urdfFile);
+    VisualizeKinematicTree (urdfFile);
 
-% Read the URDF file
-xmlData = xmlread(urdfFile);
+    % Read the URDF file
+    xmlData = xmlread(urdfFile);
 
-% Initialize structure to hold robot data
-robot = struct();
-robot.Joints = [];
+    % Initialize structure to hold robot data
+    robot = struct();
+    robot.Joints = [];
 
-% Extract all joint elements
-joints = xmlData.getElementsByTagName('joint');
-numJoints = joints.getLength;
+    % Temporary arrays for right and left leg joints
+    rightLegJoints = [];
+    leftLegJoints = [];
 
-% Initialize link array for the right leg
-link = repmat({zeros(3, 1)}, 5, 1);
+    % Extract all joint elements
+    joints = xmlData.getElementsByTagName('joint');
+    numJoints = joints.getLength;
 
-% Counter for right leg joints
-rightLegJointCount = 0;
+    % Loop through all joints
+    for i = 0:numJoints-1
+        joint = joints.item(i);
+        jointName = char(joint.getAttribute('name'));
+        jointType = char(joint.getAttribute('type'));
 
-% Loop through all joints
-for i = 0:numJoints-1
-    joint = joints.item(i);
-    jointName   = char(joint.getAttribute('name'));
-    jointType   = char(joint.getAttribute('type'));
+        % Process only revolute joints
+        if strcmp(jointType, 'revolute') || strcmp(jointType, 'continuous')
+            % Get the origin attribute
+            jointOrigin = joint.getElementsByTagName('origin');
+            jointOriginXYZ = char(jointOrigin.item(0).getAttribute('xyz'));
+            jointOriginXYZ = str2num(jointOriginXYZ); % Convert string to numeric array
+            
+            jointAxis = joint.getElementsByTagName('axis');
+            if jointAxis.getLength > 0
+                axisXYZ = char(jointAxis.item(0).getAttribute('xyz'));
+                axisXYZ = str2num(axisXYZ); % Convert string to numeric array
+            else
+                axisXYZ = [0, 0, 0]; % Default or error value
+            end
 
-    % Process only revolute joints
-    if strcmp(jointType, 'revolute')
-        % Get the origin attribute
-        jointOrigin = joint.getElementsByTagName('origin');
-        jointOriginXYZ = char(jointOrigin.item(0).getAttribute('xyz'));
-        jointOriginXYZ = str2num(jointOriginXYZ); % Convert string to numeric array
-        jointAxis = joint.getElementsByTagName('axis');
-        
-        if jointAxis.getLength > 0
-            axisXYZ = char(jointAxis.item(0).getAttribute('xyz'));
-            axisXYZ = str2num(axisXYZ); % Convert string to numeric array
-        else
-            axisXYZ = [0, 0, 0]; % Default or error value
-        end
-        % Store joint data with axis
-        robot.Joints = [robot.Joints; struct('Name', jointName, 'Type', jointType, 'Origin', jointOriginXYZ, 'Axis', axisXYZ)];
-
-%         % Store joint data in robot structure
-%         robot.Joints = [robot.Joints; struct('Name', jointName, 'Type', jointType, 'Origin', jointOriginXYZ)];
-
-
-        % Check if the joint belongs to the right leg (based on jointName or other criteria)
-        if isRightLegJoint(jointName)
-            rightLegJointCount = rightLegJointCount + 1;
-
-            % Populate the link array with joint origin
-            if rightLegJointCount <= length(link)
-                link{rightLegJointCount} = jointOriginXYZ';
+            % Store joint data with axis
+            jointData = struct('Name', jointName, 'Type', jointType, 'Origin', jointOriginXYZ, 'Axis', axisXYZ);
+            if isRightLegJoint(jointName)
+                rightLegJoints = [rightLegJoints; jointData];
+            else
+                leftLegJoints = [leftLegJoints; jointData];
             end
         end
     end
+
+    % Concatenate right and left leg joint data
+    robot.Joints = [rightLegJoints; leftLegJoints];
+
+    % Call the function to calculate Contact_Jacobian and Rotm_foot
+    [Contact_Jacobian, Rotm_foot] = Formulate_Contact_Jacobian(robot);
 end
 
-% Assuming isRightLegJoint is a function that determines if a joint is part of the right leg
+% Function to determine if a joint is part of the right leg
 function isRight = isRightLegJoint(jointName)
-    % Implement logic to determine if the joint is part of the right leg
-    isRight = contains(jointName, 'R_'); % Example criterion
+    % Check if the joint name contains any of the specified prefixes
+    %Modify based on your robot naming convention
+    rightLegPrefixes = {'R_', 'right_', 'Right_'};
+    isRight = any(contains(rightLegPrefixes, jointName));
 end
 
-% Display link information
-disp('Right leg link origins:');
-for i = 1:length(link)
-    disp(['Link ', num2str(i), ': ', mat2str(link{i})]);
-end
-Formulate_Contact_Jacobian(robot)
-end
