@@ -4,9 +4,9 @@ This project provides a set of MATLAB scripts for visualizing the kinematic tree
 
 ## Files
 
+- `startHere.m`: Main interface for the calculator, guiding the user through inputting necessary parameters.
 - `VisualizeKinematicTree.m`: Generates a visual representation of the robot's kinematic tree.
 - `testAnalyticalJacobian.m`: Tests the analytical Jacobian calculator with user-defined inputs.
-- `startHere.m`: Main interface for the calculator, guiding the user through inputting necessary parameters.
 - `parseURDF.m`: Parses URDF files to extract robot configuration and kinematics.
 - `Formulate_Contact_Jacobian.m`: Calculates and constructs the contact Jacobian and returns a Matlab symbolic function
   
