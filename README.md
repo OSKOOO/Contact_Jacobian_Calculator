@@ -16,7 +16,6 @@ To use these scripts, clone this repository or download the files into a directo
 
 ```bash
 git clone git@github.com:OSKOOO/Contact_Jacobian_Calculator.git
-cd your-repository/src
 ```
 
 ## Usage
