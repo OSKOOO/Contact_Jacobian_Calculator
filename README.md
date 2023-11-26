@@ -26,6 +26,7 @@ Run the startHere.m script in MATLAB to begin. This script will guide you throug
 ```bash
 VisualizeKinematicTree('path/to/urdf/file.urdf');
 ```
+<img src="https://github.com/OSKOOO/Contact_Jacobian_Calculator/blob/main/doc/cassie_tree.png" width="500" alt="Kinematic Tree Visualization">
 
 ## Project Structure
 
